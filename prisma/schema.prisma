@@ -1,0 +1,243 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+enum TransactionType {
+  TOPUP
+  BUY
+  SELL
+  WITHDRAWAL
+}
+
+enum TransactionStatus {
+  PENDING
+  PROCESSING
+  SUCCESS
+  FAILED
+}
+
+enum NotificationType {
+  SUCCESS
+  INFO
+  MARKET
+  UPDATE
+  SECURITY
+}
+
+enum SupportSender {
+  USER
+  SUPPORT
+}
+
+enum UserRole {
+  USER
+  ADMIN
+}
+
+enum AuditAction {
+  LOGIN
+  CREATE
+  UPDATE
+  APPROVE
+  REJECT
+  BROADCAST
+  REPLY
+}
+
+enum AssetOutcomeType {
+  PROFIT
+  LOSS
+}
+
+model User {
+  id                     String                @id @default(cuid())
+  fullName               String
+  email                  String                @unique
+  passwordHash           String
+  role                   UserRole              @default(USER)
+  phone                  String?
+  address                String?
+  membershipTier         String                @default("Premium")
+  isVerified             Boolean               @default(true)
+  availableBalance       Int                   @default(0)
+  totalInvested          Int                   @default(0)
+  totalProfit            Int                   @default(0)
+  monthlyProfit          Int                   @default(0)
+  createdAt              DateTime              @default(now())
+  updatedAt              DateTime              @updatedAt
+  notificationSettings   NotificationSettings?
+  notifications          Notification[]
+  transactions           Transaction[]
+  holdings               Holding[]
+  chatMessages           SupportChatMessage[]
+  refreshTokens          RefreshToken[]
+  auditLogs              AuditLog[]
+}
+
+model NotificationSettings {
+  id                   String   @id @default(cuid())
+  userId               String   @unique
+  emailNotifications   Boolean  @default(true)
+  appNotifications     Boolean  @default(true)
+  smsNotifications     Boolean  @default(false)
+  createdAt            DateTime @default(now())
+  updatedAt            DateTime @updatedAt
+  user                 User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Notification {
+  id         String           @id @default(cuid())
+  userId     String
+  title      String
+  message    String
+  read       Boolean          @default(false)
+  type       NotificationType @default(INFO)
+  createdAt  DateTime         @default(now())
+  user       User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Asset {
+  id              String     @id @default(cuid())
+  symbol          String     @unique
+  name            String
+  category        String
+  currentPrice    Int
+  priceChangePct  Float
+  isActive        Boolean    @default(true)
+  createdAt       DateTime   @default(now())
+  updatedAt       DateTime   @updatedAt
+  holdings        Holding[]
+  transactions    Transaction[]
+}
+
+model Holding {
+  id               String    @id @default(cuid())
+  userId           String
+  assetId          String
+  investedAmount   Int
+  currentValue     Int
+  units            Float
+  avgBuyPrice      Int
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
+  user             User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  asset            Asset     @relation(fields: [assetId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, assetId])
+}
+
+model Transaction {
+  id                String            @id @default(cuid())
+  userId            String
+  assetId           String?
+  type              TransactionType
+  title             String
+  amount            Int
+  fee               Int               @default(0)
+  status            TransactionStatus @default(PENDING)
+  paymentMethod     String?
+  destinationType   String?
+  destinationName   String?
+  accountNumber     String?
+  accountName       String?
+  proofImageUrl     String?
+  metadataJson              String?
+  reviewedByAdminId         String?
+  reviewedAt                DateTime?
+  reviewNote                String?
+  assetOutcomeType          AssetOutcomeType?
+  assetOutcomeAmount        Int               @default(0)
+  assetOutcomePercentage    Float             @default(0)
+  assetOutcomeNote          String?
+  assetOutcomeSettledByAdminId String?
+  assetOutcomeSettledAt     DateTime?
+  createdAt         DateTime          @default(now())
+  updatedAt         DateTime          @updatedAt
+  user              User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  asset             Asset?            @relation(fields: [assetId], references: [id], onDelete: SetNull)
+}
+
+model SupportFaq {
+  id         String   @id @default(cuid())
+  question   String
+  answer     String
+  order      Int      @default(0)
+  isActive   Boolean  @default(true)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+}
+
+model SupportChatMessage {
+  id         String        @id @default(cuid())
+  userId     String
+  sender     SupportSender
+  message    String
+  createdAt  DateTime      @default(now())
+  user       User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+
+model SupportContact {
+  id          String   @id @default(cuid())
+  type        String
+  label       String
+  value       String
+  href        String
+  description String?
+  isActive    Boolean  @default(true)
+  sortOrder   Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@unique([type])
+}
+
+model CompanyBankAccount {
+  id            String   @id @default(cuid())
+  bankName      String
+  accountNumber String
+  accountName   String
+  branch        String?
+  isActive      Boolean  @default(true)
+  isPrimary     Boolean  @default(false)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+}
+
+model AuditLog {
+  id         String      @id @default(cuid())
+  adminId    String
+  action     AuditAction
+  entityType String
+  entityId   String?
+  message    String
+  createdAt  DateTime    @default(now())
+  admin      User        @relation(fields: [adminId], references: [id], onDelete: Cascade)
+}
+
+model RefreshToken {
+  id         String   @id @default(cuid())
+  userId     String
+  token      String   @unique
+  expiresAt  DateTime
+  createdAt  DateTime @default(now())
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+
+model WinnerListItem {
+  id         String   @id @default(cuid())
+  type       String   @default("sell")
+  name       String
+  amount     Int
+  winDate    DateTime
+  isActive   Boolean  @default(true)
+  sortOrder  Int      @default(0)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+}
