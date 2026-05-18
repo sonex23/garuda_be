@@ -16,6 +16,6 @@ export async function invest(req: AuthenticatedRequest, res: Response) {
 
 export async function sell(req: AuthenticatedRequest, res: Response) {
   const payload = sellHoldingSchema.parse(req.body ?? {});
-  const result = await sellHolding(req.user!.userId, req.params.holdingId, payload);
+  const result = await sellHolding(req.user!.userId, req.params.holdingId  as string, payload);
   res.json(result);
 }

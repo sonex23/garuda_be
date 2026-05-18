@@ -17,6 +17,6 @@ export async function uploadProof(req: AuthenticatedRequest, res: Response) {
   }
 
   const imageUrl = `/uploads/${path.basename(req.file.path)}`;
-  const result = await uploadTopUpProof(req.user!.userId, req.params.id, imageUrl);
+  const result = await uploadTopUpProof(req.user!.userId, req.params.id as string, imageUrl);
   res.json(result);
 }

@@ -8,7 +8,7 @@ export async function list(req: AuthenticatedRequest, res: Response) {
 }
 
 export async function readOne(req: AuthenticatedRequest, res: Response) {
-  await markNotificationAsRead(req.user!.userId, req.params.id);
+  await markNotificationAsRead(req.user!.userId, req.params.id  as string);
   res.json({ message: 'Notifikasi ditandai sudah dibaca' });
 }
 

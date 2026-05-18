@@ -29,6 +29,6 @@ export async function exportTopupsCsv(req: AuthenticatedRequest, res: Response) 
 
 export async function patchTopupReview(req: AuthenticatedRequest, res: Response) {
   const payload = reviewTopupSchema.parse(req.body);
-  const result = await reviewTopup(req.user!.userId, req.params.transactionId, payload);
+  const result = await reviewTopup(req.user!.userId, req.params.transactionId  as string, payload);
   res.json(result);
 }

@@ -24,12 +24,12 @@ export async function exportUsersCsv(req: AuthenticatedRequest, res: Response) {
 }
 
 export async function getUserById(req: AuthenticatedRequest, res: Response) {
-  const result = await getUserDetail(req.params.userId);
+  const result = await getUserDetail(req.params.userId  as string);
   res.json(result);
 }
 
 export async function patchUserVerification(req: AuthenticatedRequest, res: Response) {
   const payload = userVerificationSchema.parse(req.body);
-  const result = await updateUserVerification(req.user!.userId, req.params.userId, payload.isVerified);
+  const result = await updateUserVerification(req.user!.userId, req.params.userId as string, payload.isVerified);
   res.json(result);
 }

@@ -29,6 +29,6 @@ export async function exportWithdrawalsCsv(req: AuthenticatedRequest, res: Respo
 
 export async function patchWithdrawalReview(req: AuthenticatedRequest, res: Response) {
   const payload = reviewWithdrawalSchema.parse(req.body);
-  const result = await reviewWithdrawal(req.user!.userId, req.params.transactionId, payload);
+  const result = await reviewWithdrawal(req.user!.userId, req.params.transactionId  as string, payload);
   res.json(result);
 }

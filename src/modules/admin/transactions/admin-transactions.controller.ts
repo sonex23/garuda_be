@@ -31,6 +31,6 @@ export async function exportTransactionsCsv(req: AuthenticatedRequest, res: Resp
 
 export async function patchAssetTransactionOutcome(req: AuthenticatedRequest, res: Response) {
   const payload = assetOutcomeSchema.parse(req.body);
-  const result = await setAssetTransactionOutcome(req.user!.userId, req.params.transactionId, payload);
+  const result = await setAssetTransactionOutcome(req.user!.userId, req.params.transactionId as string, payload);
   res.json(result);
 }

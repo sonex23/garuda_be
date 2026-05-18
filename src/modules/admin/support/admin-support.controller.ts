@@ -10,12 +10,12 @@ export async function getSupportThreads(_req: AuthenticatedRequest, res: Respons
 }
 
 export async function getSupportThreadByUser(req: AuthenticatedRequest, res: Response) {
-  const result = await getSupportThread(req.params.userId);
+  const result = await getSupportThread(req.params.userId as string);
   res.json(result);
 }
 
 export async function postSupportReply(req: AuthenticatedRequest, res: Response) {
   const payload = supportReplySchema.parse(req.body);
-  const result = await replySupportThread(req.user!.userId, req.params.userId, payload.message);
+  const result = await replySupportThread(req.user!.userId, req.params.userId as string, payload.message);
   res.status(201).json(result);
 }
