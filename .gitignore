@@ -42,8 +42,6 @@ desktop.ini
 *.seed
 
 # Uploads / runtime storage
-uploads/
-
 # pnpm workspace
 .pnpm-debug.log
 
@@ -51,3 +49,5 @@ uploads/
 *.tmp
 *.bak
 *.swp
+.vercel
+.env*.local
