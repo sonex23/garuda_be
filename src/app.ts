@@ -1,5 +1,4 @@
 import express from 'express';
-import serverless from 'serverless-http';
 import cors from 'cors';
 import helmet from 'helmet';
 import path from 'node:path';
@@ -30,4 +29,4 @@ app.use('/api', apiRouter);
 app.use(notFoundHandler);
 app.use(errorHandler);
 
-export default serverless(app);
+export default app;
