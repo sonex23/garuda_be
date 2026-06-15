@@ -3,7 +3,7 @@ import path from 'node:path';
 import multer from 'multer';
 import { env } from '../config/env.js';
 
-fs.mkdirSync(env.uploadDir, { recursive: true });
+// fs.mkdirSync(env.uploadDir, { recursive: true });
 
 const storage = multer.diskStorage({
   destination: (_req, _file, callback) => {
